@@ -30,6 +30,7 @@ struct ContentView: View {
       }
       .font(.headline)
       .padding(.horizontal, 16)
+      
       List {
         ForEach(filtredItems) { item in
           NavigationLink {
@@ -75,7 +76,8 @@ struct ContentView: View {
           Button(
             action: {
               showAddItemView.toggle()
-            }, label: {
+            },
+            label: {
               Text("Добавить")
             }
           )
@@ -102,7 +104,6 @@ struct ContentView: View {
       newItem.timestamp = Date()
       newItem.english = item.english
       newItem.russian = item.russian
-      
       var categoryObjects = category.items?.allObjects as? [Item] ?? []
       categoryObjects.append(newItem)
       category.items = NSSet(array: categoryObjects)
@@ -133,7 +134,6 @@ struct ContentView: View {
   private func deleteItems(offsets: IndexSet) {
     withAnimation {
       offsets.map { items[$0] }.forEach(viewContext.delete)
-      
       do {
         try viewContext.save()
       } catch {

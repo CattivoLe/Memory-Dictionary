@@ -91,6 +91,7 @@ struct GameView: View {
           },
           label: {
             Text("Следующее слово")
+              .frame(maxWidth: .infinity, maxHeight: 40)
           }
         )
         .padding(.top, 50)
@@ -103,6 +104,8 @@ struct GameView: View {
     }
   }
   
+  // MARK: - Random
+  
   private func random() {
     newElement = items.randomElement()
     if newElement == currentElement {
@@ -110,8 +113,9 @@ struct GameView: View {
     } else {
       currentElement = items.randomElement()
     }
-//    shownItem(newElement)
   }
+  
+  // MARK: - ShownItem
   
   private func shownItem(_ item: FetchedResults<Item>.Element?) {
     withAnimation {

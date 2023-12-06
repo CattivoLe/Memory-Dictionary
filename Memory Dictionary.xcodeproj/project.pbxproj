@@ -153,10 +153,10 @@
 		FAAB190E2B2070100032914B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FAAB190F2B2082800032914B /* CategoriesView.swift */,
+				FAAB18DC2B1FD1D90032914B /* ContentView.swift */,
 				FAAB190A2B1FE2990032914B /* AnswerView.swift */,
 				FAAB19062B1FD2DF0032914B /* ItemView.swift */,
-				FAAB18DC2B1FD1D90032914B /* ContentView.swift */,
-				FAAB190F2B2082800032914B /* CategoriesView.swift */,
 				FAAB190C2B2070060032914B /* GameView.swift */,
 			);
 			path = Views;

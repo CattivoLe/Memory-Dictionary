@@ -27,7 +27,8 @@ struct AnswerView: View {
         Button(
           action: {
             showEditView.toggle()
-          }, label: {
+          }, 
+          label: {
             Text("Изменить")
           }
         )

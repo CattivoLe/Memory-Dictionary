@@ -52,8 +52,10 @@ struct ItemView: View {
             answer: false
           )
           onButtonTap?(result)
-        }, label: {
+        }, 
+        label: {
           Text(buttonTitle)
+            .frame(maxWidth: .infinity, maxHeight: 40)
         }
       )
       .buttonStyle(.borderedProminent)

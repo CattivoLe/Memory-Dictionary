@@ -25,7 +25,6 @@ struct CategoriesView: View {
           }
           .onDelete(perform: deleteItems)
         }
-        .listStyle(.sidebar)
         .toolbar {
           ToolbarItem(placement: .topBarLeading) {
             Picker("Язык", selection: $selectedlanguage) {
@@ -53,16 +52,16 @@ struct CategoriesView: View {
           }
         }
         
-        Spacer()
-        
         NavigationLink {
           GameView(language: selectedlanguage) { element, answer in
             changeItem(element, answer: answer)
           }
         } label: {
           Text("Играть")
+            .frame(maxWidth: .infinity, maxHeight: 40)
         }
         .buttonStyle(.borderedProminent)
+        .padding(.horizontal, 16)
       }
     }
   }
@@ -74,7 +73,6 @@ struct CategoriesView: View {
       let newItem = Category(context: viewContext)
       newItem.timestamp = Date()
       newItem.title = title
-      
       do {
         try viewContext.save()
       } catch {
