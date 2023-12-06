@@ -39,7 +39,13 @@ struct GameView: View {
       
       VStack {
         if let element = currentElement {
-          let text = showTranslation ? element.russian ?? "" : element.english ?? ""
+          var text: String {
+            if language == .eng {
+              showTranslation ? element.russian ?? "" : element.english ?? ""
+            } else {
+              showTranslation ? element.english ?? "" : element.russian ?? ""
+            }
+          }
           Text(text)
             .multilineTextAlignment(.center)
             .font(.largeTitle)
