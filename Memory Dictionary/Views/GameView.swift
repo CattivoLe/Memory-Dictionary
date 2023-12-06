@@ -93,6 +93,7 @@ struct GameView: View {
         
         Button(
           action: {
+            showTranslation = false
             random()
           },
           label: {
