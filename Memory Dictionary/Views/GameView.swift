@@ -54,32 +54,6 @@ struct GameView: View {
         
         Spacer()
         
-        HStack(spacing: 20) {
-          Button(
-            action: {
-              onAnswerTap(currentElement, true)
-              shownItem(currentElement)
-            },
-            label: {
-              Text("Угадал")
-                .foregroundColor(.green)
-            }
-          )
-          .buttonStyle(.bordered)
-          
-          Button(
-            action: {
-              onAnswerTap(currentElement, false)
-              shownItem(currentElement)
-            },
-            label: {
-              Text("Ошибся")
-                .foregroundColor(.red)
-            }
-          )
-          .buttonStyle(.bordered)
-        }
-        
         Button(
           action: {
             showTranslation.toggle()
@@ -91,24 +65,46 @@ struct GameView: View {
           }
         )
         
-        Button(
-          action: {
-            showTranslation = false
-            random()
-          },
-          label: {
-            Text("Следующее слово")
-              .frame(maxWidth: .infinity, maxHeight: 40)
-          }
-        )
-        .padding(.top, 50)
-        .buttonStyle(.borderedProminent)
+        HStack(spacing: 20) {
+          Button(
+            action: {
+              buttonTap(answer: true)
+            },
+            label: {
+              Text("Угадал")
+                .foregroundColor(.green)
+                .frame(maxWidth: .infinity, maxHeight: 40)
+            }
+          )
+          .buttonStyle(.bordered)
+          
+          Button(
+            action: {
+              buttonTap(answer: false)
+            },
+            label: {
+              Text("Ошибся")
+                .foregroundColor(.red)
+                .frame(maxWidth: .infinity, maxHeight: 40)
+            }
+          )
+          .buttonStyle(.bordered)
+        }
+//        .frame(maxWidth: .infinity, maxHeight: 40)
       }
     }
     .padding()
+    .navigationTitle("Все слова")
     .onAppear {
       random()
     }
+  }
+  
+  private func buttonTap(answer: Bool) {
+    showTranslation = false
+    onAnswerTap(currentElement, answer)
+    shownItem(currentElement)
+    random()
   }
   
   // MARK: - Random

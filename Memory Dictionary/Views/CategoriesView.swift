@@ -5,7 +5,7 @@ struct CategoriesView: View {
   @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Category.timestamp, ascending: true)], animation: .default)
   private var categories: FetchedResults<Category>
   
-  @State private var selectedlanguage: Language = .eng
+  @State private var selectedlanguage: Language = .rus
   @State private var showAddItemAlert: Bool = false
   @State private var newCategoryTitle: String = String()
   

@@ -116,6 +116,8 @@ struct ContentView: View {
     }
   }
   
+  // MARK: - ChangeItem
+  
   private func changeItem(_ item: FetchedResults<Item>.Element, element: Element) {
     withAnimation {
       item.english = element.english

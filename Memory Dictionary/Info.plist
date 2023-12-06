@@ -5,7 +5,7 @@
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIImageName</key>
-		<string>AppIcon</string>
+		<string></string>
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
