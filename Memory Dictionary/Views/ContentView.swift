@@ -54,10 +54,15 @@ struct ContentView: View {
                 return .gray
               }
             }
-            Rectangle()
-              .fill(color)
-              .frame(width: 20, height: 20)
-              .cornerRadius(10)
+            if item.answer {
+              Image(systemName: "cat.fill")
+                .foregroundColor(color)
+            } else {
+              Rectangle()
+                .fill(color)
+                .frame(width: 20, height: 20)
+                .cornerRadius(10)
+            }
             
             var title: String {
               switch language {
@@ -66,6 +71,14 @@ struct ContentView: View {
               }
             }
             Text(title)
+            if let time = item.answerTime, item.answer {
+              Text(time)
+                .foregroundColor(.green)
+            }
+            if item.hardMode {
+              Text("HARD")
+                .foregroundColor(.orange)
+            }
           }
         }
         .onDelete(perform: deleteItems)

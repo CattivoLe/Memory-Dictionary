@@ -6,7 +6,7 @@ struct GameView: View {
   private var items: FetchedResults<Item>
   
   let language: Language
-  let onAnswerTap: ((FetchedResults<Item>.Element?, Bool) -> Void)
+  let onAnswerTap: ((FetchedResults<Item>.Element?, Bool, String) -> Void)
   
   @ObservedObject private var settingsStorage = SettingsStorage()
   
@@ -16,29 +16,48 @@ struct GameView: View {
   @State private var translationFieldValue: String = String()
   @State private var backgroundColor: Color = Color(UIColor.systemBackground)
   @State private var isVerified: Bool = false
+  @State private var startDate = Date.now
+  @State private var timeElapsed = String()
+  @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
   
   // MARK: - Body
   
   var body: some View {
     VStack(spacing: .zero) {
       HStack {
-        Text("Всего слов:")
-        Text("\(items.count)")
+        VStack {
+          HStack {
+            Text("Всего слов:")
+            Text("\(items.count)")
+            Spacer()
+          }
+          HStack {
+            Text("Угадано:")
+            Text("\(items.filter { $0.shown && $0.answer }.count)")
+            Spacer()
+          }
+          HStack {
+            Text("Ошибок:")
+            Text("\(items.filter { $0.shown && !$0.answer }.count)")
+            Spacer()
+          }
+        }
+        .font(.headline)
+        
+        Text(timeElapsed)
+          .font(.title)
+          .onReceive(timer) { firedDate in
+            let string = Duration
+                .seconds(firedDate.timeIntervalSince(startDate))
+                .formatted(.units(
+                    allowed: [.minutes, .seconds],
+                    width: .condensedAbbreviated,
+                    fractionalPart: .show(length: 0)
+                ))
+            timeElapsed = string
+          }
         Spacer()
       }
-      .font(.headline)
-      HStack {
-        Text("Угадано:")
-        Text("\(items.filter { $0.shown && $0.answer }.count)")
-        Spacer()
-      }
-      .font(.headline)
-      HStack {
-        Text("Ошибок:")
-        Text("\(items.filter { $0.shown && !$0.answer }.count)")
-        Spacer()
-      }
-      .font(.headline)
       
       VStack {
         if let element = currentElement {
@@ -67,6 +86,7 @@ struct GameView: View {
             HStack {
               Button(
                 action: {
+                  timer.upstream.connect().cancel()
                   checkButtonTap(answer: compare())
                 },
                 label: {
@@ -82,7 +102,7 @@ struct GameView: View {
                 action: {
                   isVerified = false
                   translationFieldValue = String()
-                  buttonTap(answer: compare())
+                  answerButtonTap(answer: compare())
                 },
                 label: {
                   Text("Next")
@@ -95,6 +115,7 @@ struct GameView: View {
         } else {
           Button(
             action: {
+              timer.upstream.connect().cancel()
               isShowTranslation.toggle()
             },
             label: {
@@ -107,7 +128,7 @@ struct GameView: View {
           HStack(spacing: 20) {
             Button(
               action: {
-                buttonTap(answer: true)
+                answerButtonTap(answer: true)
               },
               label: {
                 Text("Угадал")
@@ -119,7 +140,7 @@ struct GameView: View {
             
             Button(
               action: {
-                buttonTap(answer: false)
+                answerButtonTap(answer: false)
               },
               label: {
                 Text("Ошибся")
@@ -141,9 +162,9 @@ struct GameView: View {
     .animation(.easeInOut(duration: 0.3).repeatCount(1, autoreverses: true), value: backgroundColor)
   }
   
-  private func buttonTap(answer: Bool) {
+  private func answerButtonTap(answer: Bool) {
     isShowTranslation = false
-    onAnswerTap(currentElement, answer)
+    onAnswerTap(currentElement, answer, timeElapsed)
     shownItem(currentElement)
     random()
   }
@@ -155,7 +176,7 @@ struct GameView: View {
     backgroundColor = Color(UIColor.systemBackground)
     isShowTranslation = true
     isVerified = true
-    onAnswerTap(currentElement, answer)
+    onAnswerTap(currentElement, answer, timeElapsed)
     shownItem(currentElement)
   }
   
@@ -180,6 +201,8 @@ struct GameView: View {
     } else {
       currentElement = items.randomElement()
     }
+    startDate = Date.now
+    timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
   }
   
   // MARK: - ShownItem
@@ -200,6 +223,6 @@ struct GameView: View {
 // MARK: - Preview
 
 #Preview {
-  GameView(language: .eng, onAnswerTap: { _, _ in })
+  GameView(language: .eng, onAnswerTap: { _, _, _ in })
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

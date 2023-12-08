@@ -60,8 +60,8 @@ struct CategoriesView: View {
         }
         
         NavigationLink {
-          GameView(language: settingsStorage.language) { element, answer in
-            changeItem(element, answer: answer)
+          GameView(language: settingsStorage.language) { element, answer, time in
+            changeItem(element, answer: answer, time: time)
           }
         } label: {
           Text("Play")
@@ -96,9 +96,11 @@ struct CategoriesView: View {
   
   // MARK: - ChangeItem
   
-  private func changeItem(_ item: FetchedResults<Item>.Element?, answer: Bool) {
+  private func changeItem(_ item: FetchedResults<Item>.Element?, answer: Bool, time: String) {
     withAnimation {
       item?.answer = answer
+      item?.answerTime = time
+      item?.hardMode = settingsStorage.isHardMode
       saveContext()
     }
   }
@@ -107,6 +109,9 @@ struct CategoriesView: View {
     categories.forEach { category in
       category.items?.forEach { element in
         (element as? Item)?.shown = false
+        (element as? Item)?.answerTime = ""
+        (element as? Item)?.answer = false
+        (element as? Item)?.hardMode = false
       }
     }
     saveContext()
