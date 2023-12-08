@@ -34,6 +34,10 @@ struct SettingsView: View {
         }
         .pickerStyle(SegmentedPickerStyle())
         .frame(height: 50)
+        
+        Toggle("Hard mode", isOn: $settingsStorage.isHardMode)
+          .toggleStyle(SwitchToggleStyle(tint: .blue))
+          .frame(height: 50)
       }
     }
     .navigationTitle("Settings")
