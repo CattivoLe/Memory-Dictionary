@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ItemView: View {
-  
   let title: String
   let buttonTitle: String
   let englishValue: String?

@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FAA1A41A2B231B4700601EBF /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA1A4192B231B4700601EBF /* SettingsView.swift */; };
+		FAA1A41C2B231DDE00601EBF /* NotificationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA1A41B2B231DDE00601EBF /* NotificationHandler.swift */; };
+		FAA1A4202B23974D00601EBF /* SettingsStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA1A41F2B23974D00601EBF /* SettingsStorage.swift */; };
+		FAA1A4262B23A42400601EBF /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA1A4252B23A42400601EBF /* Language.swift */; };
 		FAAB18D62B1FD1D90032914B /* Memory_DictionaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAB18D52B1FD1D90032914B /* Memory_DictionaryApp.swift */; };
 		FAAB18D82B1FD1D90032914B /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAB18D72B1FD1D90032914B /* Persistence.swift */; };
 		FAAB18DB2B1FD1D90032914B /* Memory_Dictionary.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FAAB18D92B1FD1D90032914B /* Memory_Dictionary.xcdatamodeld */; };
@@ -21,7 +25,6 @@
 		FAAB190B2B1FE2990032914B /* AnswerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAB190A2B1FE2990032914B /* AnswerView.swift */; };
 		FAAB190D2B2070060032914B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAB190C2B2070060032914B /* GameView.swift */; };
 		FAAB19102B2082800032914B /* CategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAB190F2B2082800032914B /* CategoriesView.swift */; };
-		FAAB19122B2085CA0032914B /* Language.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAAB19112B2085CA0032914B /* Language.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +45,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FAA1A4192B231B4700601EBF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		FAA1A41B2B231DDE00601EBF /* NotificationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHandler.swift; sourceTree = "<group>"; };
+		FAA1A41F2B23974D00601EBF /* SettingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStorage.swift; sourceTree = "<group>"; };
+		FAA1A4252B23A42400601EBF /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 		FAAB18D22B1FD1D90032914B /* Memory Dictionary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Memory Dictionary.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAAB18D52B1FD1D90032914B /* Memory_DictionaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Memory_DictionaryApp.swift; sourceTree = "<group>"; };
 		FAAB18D72B1FD1D90032914B /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -61,7 +68,6 @@
 		FAAB190A2B1FE2990032914B /* AnswerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerView.swift; sourceTree = "<group>"; };
 		FAAB190C2B2070060032914B /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		FAAB190F2B2082800032914B /* CategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoriesView.swift; sourceTree = "<group>"; };
-		FAAB19112B2085CA0032914B /* Language.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Language.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +120,8 @@
 			children = (
 				FAAB18D52B1FD1D90032914B /* Memory_DictionaryApp.swift */,
 				FAAB18D72B1FD1D90032914B /* Persistence.swift */,
+				FAA1A41F2B23974D00601EBF /* SettingsStorage.swift */,
+				FAA1A41B2B231DDE00601EBF /* NotificationHandler.swift */,
 				FAAB190E2B2070100032914B /* Views */,
 				FAAB19132B20AAB40032914B /* Models */,
 				FAAB18DE2B1FD1DA0032914B /* Assets.xcassets */,
@@ -158,6 +166,7 @@
 				FAAB190A2B1FE2990032914B /* AnswerView.swift */,
 				FAAB19062B1FD2DF0032914B /* ItemView.swift */,
 				FAAB190C2B2070060032914B /* GameView.swift */,
+				FAA1A4192B231B4700601EBF /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,8 +174,8 @@
 		FAAB19132B20AAB40032914B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				FAAB19112B2085CA0032914B /* Language.swift */,
 				FAAB19082B1FDB640032914B /* Element.swift */,
+				FAA1A4252B23A42400601EBF /* Language.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -301,15 +310,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAA1A41A2B231B4700601EBF /* SettingsView.swift in Sources */,
 				FAAB18D62B1FD1D90032914B /* Memory_DictionaryApp.swift in Sources */,
-				FAAB19122B2085CA0032914B /* Language.swift in Sources */,
 				FAAB190D2B2070060032914B /* GameView.swift in Sources */,
+				FAA1A4202B23974D00601EBF /* SettingsStorage.swift in Sources */,
 				FAAB18D82B1FD1D90032914B /* Persistence.swift in Sources */,
+				FAA1A41C2B231DDE00601EBF /* NotificationHandler.swift in Sources */,
 				FAAB190B2B1FE2990032914B /* AnswerView.swift in Sources */,
 				FAAB19092B1FDB640032914B /* Element.swift in Sources */,
 				FAAB19102B2082800032914B /* CategoriesView.swift in Sources */,
 				FAAB18DD2B1FD1D90032914B /* ContentView.swift in Sources */,
 				FAAB18DB2B1FD1D90032914B /* Memory_Dictionary.xcdatamodeld in Sources */,
+				FAA1A4262B23A42400601EBF /* Language.swift in Sources */,
 				FAAB19072B1FD2DF0032914B /* ItemView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

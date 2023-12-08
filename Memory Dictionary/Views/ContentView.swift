@@ -6,7 +6,7 @@ struct ContentView: View {
   @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)], animation: .default)
   private var items: FetchedResults<Item>
   
-  @State private var showAddItemView = false
+  @State private var toShowAddItemView = false
   
   let category: FetchedResults<Category>.Element
   let language: Language
@@ -75,19 +75,19 @@ struct ContentView: View {
         ToolbarItem {
           Button(
             action: {
-              showAddItemView.toggle()
+              toShowAddItemView.toggle()
             },
             label: {
               Text("Добавить")
             }
           )
-          .sheet(isPresented: $showAddItemView) {
+          .sheet(isPresented: $toShowAddItemView) {
             ItemView(
               title: "Добавить новое слово",
               buttonTitle: "Добавить"
             ) { result in
               addNewItem(result)
-              showAddItemView.toggle()
+              toShowAddItemView.toggle()
             }
             .presentationDetents([.medium])
           }

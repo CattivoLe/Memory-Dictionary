@@ -8,7 +8,7 @@ struct GameView: View {
   let language: Language
   let onAnswerTap: ((FetchedResults<Item>.Element?, Bool) -> Void)
   
-  @State private var showTranslation: Bool = false
+  @State private var isShowTranslation: Bool = false
   @State private var newElement: FetchedResults<Item>.Element?
   @State private var currentElement: FetchedResults<Item>.Element?
   
@@ -41,9 +41,9 @@ struct GameView: View {
         if let element = currentElement {
           var text: String {
             if language == .eng {
-              showTranslation ? element.russian ?? "" : element.english ?? ""
+              isShowTranslation ? element.russian ?? "" : element.english ?? ""
             } else {
-              showTranslation ? element.english ?? "" : element.russian ?? ""
+              isShowTranslation ? element.english ?? "" : element.russian ?? ""
             }
           }
           Text(text)
@@ -56,10 +56,10 @@ struct GameView: View {
         
         Button(
           action: {
-            showTranslation.toggle()
+            isShowTranslation.toggle()
           },
           label: {
-            let title = showTranslation ? "Скрыть перевод" :  "Показать перевод"
+            let title = isShowTranslation ? "Скрыть перевод" :  "Показать перевод"
             Text(title)
               .font(.title)
           }
@@ -101,7 +101,7 @@ struct GameView: View {
   }
   
   private func buttonTap(answer: Bool) {
-    showTranslation = false
+    isShowTranslation = false
     onAnswerTap(currentElement, answer)
     shownItem(currentElement)
     random()

@@ -5,8 +5,8 @@ struct CategoriesView: View {
   @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Category.timestamp, ascending: true)], animation: .default)
   private var categories: FetchedResults<Category>
   
-  @State private var selectedlanguage: Language = .rus
-  @State private var showAddItemAlert: Bool = false
+  @ObservedObject private var settingsStorage = SettingsStorage()
+  @State private var toShowAddItemAlert: Bool = false
   @State private var newCategoryTitle: String = String()
   
   // MARK: - Body
@@ -17,7 +17,7 @@ struct CategoriesView: View {
         List {
           ForEach(categories) { category in
             NavigationLink {
-              ContentView(category: category, language: selectedlanguage)
+              ContentView(category: category, language: settingsStorage.language)
                 .environment(\.managedObjectContext, viewContext)
             } label: {
               Text(category.title ?? "")
@@ -27,25 +27,30 @@ struct CategoriesView: View {
         }
         .toolbar {
           ToolbarItem(placement: .topBarLeading) {
-            Picker("Язык", selection: $selectedlanguage) {
-              Text("Русский")
-                .tag(Language.rus)
-              Text("Английский")
-                .tag(Language.eng)
+            NavigationLink {
+              SettingsView()
+            } label: {
+              Label(
+                title: { Text("Settings") },
+                icon: { Image(systemName: "gearshape") }
+              )
             }
           }
           ToolbarItem(placement: .topBarTrailing) {
             Button(
               action: {
-                showAddItemAlert.toggle()
+                toShowAddItemAlert.toggle()
               }, label: {
-                Text("Добавить")
+                Label(
+                  title: { Text("Add") },
+                  icon: { Image(systemName: "plus.circle") }
+                )
               }
             )
-            .alert("Enter category name", isPresented: $showAddItemAlert) {
+            .alert("Enter category name", isPresented: $toShowAddItemAlert) {
               TextField("Enter name", text: $newCategoryTitle)
               Button("Save", action: {
-                showAddItemAlert.toggle()
+                toShowAddItemAlert.toggle()
                 addNewItem(newCategoryTitle)
               })
             }
@@ -53,11 +58,11 @@ struct CategoriesView: View {
         }
         
         NavigationLink {
-          GameView(language: selectedlanguage) { element, answer in
+          GameView(language: settingsStorage.language) { element, answer in
             changeItem(element, answer: answer)
           }
         } label: {
-          Text("Играть")
+          Text("Play")
             .frame(maxWidth: .infinity, maxHeight: 40)
         }
         .buttonStyle(.borderedProminent)
