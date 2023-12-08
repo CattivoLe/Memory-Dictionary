@@ -28,7 +28,9 @@ struct CategoriesView: View {
         .toolbar {
           ToolbarItem(placement: .topBarLeading) {
             NavigationLink {
-              SettingsView()
+              SettingsView(onClearResults: {
+                clearResults()
+              })
             } label: {
               Label(
                 title: { Text("Settings") },
@@ -78,12 +80,7 @@ struct CategoriesView: View {
       let newItem = Category(context: viewContext)
       newItem.timestamp = Date()
       newItem.title = title
-      do {
-        try viewContext.save()
-      } catch {
-        let nsError = error as NSError
-        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-      }
+      saveContext()
     }
   }
   
@@ -91,13 +88,9 @@ struct CategoriesView: View {
   
   private func deleteItems(offsets: IndexSet) {
     withAnimation {
-      offsets.map { categories[$0] }.forEach(viewContext.delete)
-      do {
-        try viewContext.save()
-      } catch {
-        let nsError = error as NSError
-        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-      }
+      offsets.map { categories[$0] }
+        .forEach(viewContext.delete)
+      saveContext()
     }
   }
   
@@ -106,12 +99,25 @@ struct CategoriesView: View {
   private func changeItem(_ item: FetchedResults<Item>.Element?, answer: Bool) {
     withAnimation {
       item?.answer = answer
-      do {
-        try viewContext.save()
-      } catch {
-        let nsError = error as NSError
-        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+      saveContext()
+    }
+  }
+  
+  private func clearResults() {
+    categories.forEach { category in
+      category.items?.forEach { element in
+        (element as? Item)?.shown = false
       }
+    }
+    saveContext()
+  }
+  
+  private func saveContext() {
+    do {
+      try viewContext.save()
+    } catch {
+      let nsError = error as NSError
+      fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
     }
   }
 }
