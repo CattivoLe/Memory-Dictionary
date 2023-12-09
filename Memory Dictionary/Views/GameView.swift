@@ -5,7 +5,6 @@ struct GameView: View {
   @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)], animation: .default)
   private var items: FetchedResults<Item>
   
-  let language: Language
   let onAnswerTap: ((FetchedResults<Item>.Element?, Bool, String) -> Void)
   
   @ObservedObject private var settingsStorage = SettingsStorage()
@@ -48,12 +47,12 @@ struct GameView: View {
           .font(.title)
           .onReceive(timer) { firedDate in
             let string = Duration
-                .seconds(firedDate.timeIntervalSince(startDate))
-                .formatted(.units(
-                    allowed: [.minutes, .seconds],
-                    width: .condensedAbbreviated,
-                    fractionalPart: .show(length: 0)
-                ))
+              .seconds(firedDate.timeIntervalSince(startDate))
+              .formatted(.units(
+                allowed: [.minutes, .seconds],
+                width: .condensedAbbreviated,
+                fractionalPart: .show(length: 0)
+              ))
             timeElapsed = string
           }
         Spacer()
@@ -62,7 +61,7 @@ struct GameView: View {
       VStack {
         if let element = currentElement {
           var text: String {
-            if language == .eng {
+            if settingsStorage.language == .eng {
               isShowTranslation ? element.russian ?? "" : element.english ?? ""
             } else {
               isShowTranslation ? element.english ?? "" : element.russian ?? ""
@@ -76,80 +75,35 @@ struct GameView: View {
         
         Spacer()
         
-        // MARK: - isHardMode
-        
-        if settingsStorage.isHardMode {
-          VStack(spacing: 50) {
-            TextField("Translation", text: $translationFieldValue)
-              .textFieldStyle(.roundedBorder)
-            
-            HStack {
-              Button(
-                action: {
-                  timer.upstream.connect().cancel()
-                  checkButtonTap(answer: compare())
-                },
-                label: {
-                  Text("Сheck")
-                    .font(.title)
-                }
-              )
-              .disabled(translationFieldValue.isEmpty || isVerified)
-              
-              Spacer()
-              
-              Button(
-                action: {
-                  answerButtonTap(answer: compare())
-                  isVerified = false
-                  translationFieldValue = String()
-                },
-                label: {
-                  Text("Next")
-                    .font(.title)
-                }
-              )
-            }
-            .buttonStyle(.bordered)
-          }
-        } else {
-          Button(
-            action: {
-              timer.upstream.connect().cancel()
-              isShowTranslation.toggle()
-            },
-            label: {
-              let title = isShowTranslation ? "Скрыть перевод" :  "Показать перевод"
-              Text(title)
-                .font(.title)
-            }
-          )
+        VStack(spacing: 50) {
+          TextField("Translation", text: $translationFieldValue)
+            .textFieldStyle(.roundedBorder)
           
-          HStack(spacing: 20) {
+          HStack {
             Button(
               action: {
-                answerButtonTap(answer: true)
+                checkButtonTap(answer: compare())
               },
               label: {
-                Text("Угадал")
-                  .foregroundColor(.green)
-                  .frame(maxWidth: .infinity, maxHeight: 40)
+                Text("Сheck")
+                  .font(.title)
               }
             )
-            .buttonStyle(.bordered)
+            .disabled(translationFieldValue.isEmpty || isVerified)
+            
+            Spacer()
             
             Button(
               action: {
-                answerButtonTap(answer: false)
+                nextButtonTap(answer: compare())
               },
               label: {
-                Text("Ошибся")
-                  .foregroundColor(.red)
-                  .frame(maxWidth: .infinity, maxHeight: 40)
+                Text("Next")
+                  .font(.title)
               }
             )
-            .buttonStyle(.bordered)
           }
+          .buttonStyle(.bordered)
         }
       }
     }
@@ -162,14 +116,17 @@ struct GameView: View {
     .animation(.easeInOut(duration: 0.3).repeatCount(1, autoreverses: true), value: backgroundColor)
   }
   
-  private func answerButtonTap(answer: Bool) {
+  private func nextButtonTap(answer: Bool) {
     isShowTranslation = false
     onAnswerTap(currentElement, answer, timeElapsed)
     shownItem(currentElement)
     random()
+    isVerified = false
+    translationFieldValue = String()
   }
   
   private func checkButtonTap(answer: Bool) {
+    timer.upstream.connect().cancel()
     withAnimation {
       backgroundColor = answer ? .green : .red
     }
@@ -182,7 +139,7 @@ struct GameView: View {
   
   private func compare() -> Bool {
     let original = (
-      language == .eng
+      settingsStorage.language == .eng
       ? currentElement?.russian ?? ""
       : currentElement?.english ?? ""
     )
@@ -225,6 +182,6 @@ struct GameView: View {
 // MARK: - Preview
 
 #Preview {
-  GameView(language: .eng, onAnswerTap: { _, _, _ in })
+  GameView(onAnswerTap: { _, _, _ in })
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

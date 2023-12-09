@@ -9,7 +9,6 @@
         <attribute name="answer" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="answerTime" optional="YES" attributeType="String"/>
         <attribute name="english" optional="YES" attributeType="String"/>
-        <attribute name="hardMode" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="russian" optional="YES" attributeType="String"/>
         <attribute name="shown" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

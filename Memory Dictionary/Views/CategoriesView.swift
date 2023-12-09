@@ -5,7 +5,6 @@ struct CategoriesView: View {
   @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Category.timestamp, ascending: true)], animation: .default)
   private var categories: FetchedResults<Category>
   
-  @ObservedObject private var settingsStorage = SettingsStorage()
   @State private var toShowAddItemAlert: Bool = false
   @State private var newCategoryTitle: String = String()
   
@@ -14,10 +13,26 @@ struct CategoriesView: View {
   var body: some View {
     NavigationView {
       VStack {
+        HStack {
+          let items = categories.compactMap { $0.items?.compactMap { $0 as? Item } }.flatMap { $0 }
+          Text("Всего:")
+          Text("\(items.count)")
+          
+          Text("Угадано:")
+            .foregroundColor(.green)
+          Text("\(items.filter { $0.shown && $0.answer }.count)")
+          
+          Text("Ошибок:")
+            .foregroundColor(.red)
+          Text("\(items.filter { $0.shown && !$0.answer }.count)")
+        }
+        .font(.headline)
+        .padding(.horizontal, 16)
+        
         List {
           ForEach(categories) { category in
             NavigationLink {
-              ContentView(category: category, language: settingsStorage.language)
+              ContentView(category: category)
                 .environment(\.managedObjectContext, viewContext)
             } label: {
               Text(category.title ?? "")
@@ -55,12 +70,15 @@ struct CategoriesView: View {
                 toShowAddItemAlert.toggle()
                 addNewItem(newCategoryTitle)
               })
+              Button("Cancel", action: {
+                toShowAddItemAlert = false
+              })
             }
           }
         }
         
         NavigationLink {
-          GameView(language: settingsStorage.language) { element, answer, time in
+          GameView() { element, answer, time in
             changeItem(element, answer: answer, time: time)
           }
         } label: {
@@ -100,7 +118,6 @@ struct CategoriesView: View {
     withAnimation {
       item?.answer = answer
       item?.answerTime = time
-      item?.hardMode = settingsStorage.isHardMode
       saveContext()
     }
   }
@@ -111,7 +128,6 @@ struct CategoriesView: View {
         (element as? Item)?.shown = false
         (element as? Item)?.answerTime = ""
         (element as? Item)?.answer = false
-        (element as? Item)?.hardMode = false
       }
     }
     saveContext()

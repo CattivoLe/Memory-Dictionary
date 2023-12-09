@@ -27,12 +27,6 @@ final class SettingsStorage: ObservableObject {
     }
   }
   
-  var isHardMode: Bool = UserDefaults.isHardMode {
-    willSet {
-      UserDefaults.isHardMode = newValue
-    }
-  }
-  
   // MARK: - Notification
   
   private func manageMessageNotification(_ addToNotification: Bool) {
@@ -104,15 +98,6 @@ extension UserDefaults {
       UserDefaults.standard.set(newValue.rawValue, forKey: Keys.selectedlanguage)
     }
   }
-  
-  static var isHardMode: Bool {
-    get {
-      UserDefaults.standard.bool(forKey: Keys.isHardMode)
-    }
-    set {
-      UserDefaults.standard.set(newValue, forKey: Keys.isHardMode)
-    }
-  }
 }
 
 // MARK: - Keys
@@ -123,6 +108,5 @@ extension UserDefaults {
     static let reminderMessageText = "reminderMessageText"
     static let reminderMessageDate = "reminderMessageDate"
     static let selectedlanguage = "selectedlanguage"
-    static let isHardMode = "isHardMode"
   }
 }

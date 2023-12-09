@@ -6,10 +6,11 @@ struct ContentView: View {
   @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)], animation: .default)
   private var items: FetchedResults<Item>
   
+  @ObservedObject private var settingsStorage = SettingsStorage()
+  
   @State private var toShowAddItemView = false
   
   let category: FetchedResults<Category>.Element
-  let language: Language
   
   // MARK: - Body
   
@@ -41,7 +42,7 @@ struct ContentView: View {
             )
             AnswerView(
               element: element,
-              language: language,
+              language: settingsStorage.language,
               onEditTap: { element in
                 changeItem(item, element: element)
               }
@@ -65,7 +66,7 @@ struct ContentView: View {
             }
             
             var title: String {
-              switch language {
+              switch settingsStorage.language {
               case .eng: return item.english ?? ""
               case .rus: return item.russian ?? ""
               }
@@ -74,10 +75,6 @@ struct ContentView: View {
             if let time = item.answerTime, item.answer {
               Text(time)
                 .foregroundColor(.green)
-            }
-            if item.hardMode {
-              Text("HARD")
-                .foregroundColor(.orange)
             }
           }
         }
@@ -91,7 +88,10 @@ struct ContentView: View {
               toShowAddItemView.toggle()
             },
             label: {
-              Text("Добавить")
+              Label(
+                title: { Text("Add") },
+                icon: { Image(systemName: "plus.circle") }
+              )
             }
           )
           .sheet(isPresented: $toShowAddItemView) {
@@ -120,12 +120,7 @@ struct ContentView: View {
       var categoryObjects = category.items?.allObjects as? [Item] ?? []
       categoryObjects.append(newItem)
       category.items = NSSet(array: categoryObjects)
-      do {
-        try viewContext.save()
-      } catch {
-        let nsError = error as NSError
-        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-      }
+      saveContext()
     }
   }
   
@@ -135,12 +130,7 @@ struct ContentView: View {
     withAnimation {
       item.english = element.english
       item.russian = element.russian
-      do {
-        try viewContext.save()
-      } catch {
-        let nsError = error as NSError
-        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-      }
+      saveContext()
     }
   }
   
@@ -149,12 +139,16 @@ struct ContentView: View {
   private func deleteItems(offsets: IndexSet) {
     withAnimation {
       offsets.map { items[$0] }.forEach(viewContext.delete)
-      do {
-        try viewContext.save()
-      } catch {
-        let nsError = error as NSError
-        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-      }
+      saveContext()
+    }
+  }
+  
+  private func saveContext() {
+    do {
+      try viewContext.save()
+    } catch {
+      let nsError = error as NSError
+      fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
     }
   }
 }
@@ -170,6 +164,6 @@ struct ContentView: View {
   newItem.russian = "Кот"
   
   category.items = [newItem]
-  return ContentView(category: category, language: .eng)
+  return ContentView(category: category)
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
