@@ -109,7 +109,7 @@ struct GameView: View {
     }
     .padding()
     .background(backgroundColor)
-    .navigationTitle("Все слова")
+    .navigationTitle("All words")
     .onAppear {
       random()
     }

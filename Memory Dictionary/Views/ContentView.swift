@@ -15,22 +15,9 @@ struct ContentView: View {
   // MARK: - Body
   
   var body: some View {
-    let filtredItems = items.filter { $0.category?.title == category.title }
     VStack {
-      HStack {
-        Text("Всего:")
-        Text("\(filtredItems.count)")
-        
-        Text("Угадано:")
-          .foregroundColor(.green)
-        Text("\(filtredItems.filter { $0.shown && $0.answer }.count)")
-        
-        Text("Ошибок:")
-          .foregroundColor(.red)
-        Text("\(filtredItems.filter { $0.shown && !$0.answer }.count)")
-      }
-      .font(.headline)
-      .padding(.horizontal, 16)
+      let filtredItems = items.filter { $0.category?.title == category.title }
+      HeaderView(items: filtredItems)
       
       List {
         ForEach(filtredItems) { item in
@@ -96,8 +83,8 @@ struct ContentView: View {
           )
           .sheet(isPresented: $toShowAddItemView) {
             ItemView(
-              title: "Добавить новое слово",
-              buttonTitle: "Добавить"
+              title: "Add new word",
+              buttonTitle: "Add"
             ) { result in
               addNewItem(result)
               toShowAddItemView.toggle()

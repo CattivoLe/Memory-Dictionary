@@ -29,13 +29,13 @@ struct AnswerView: View {
             showEditView.toggle()
           }, 
           label: {
-            Text("Изменить")
+            Text("Change")
           }
         )
         .sheet(isPresented: $showEditView) {
           ItemView(
-            title: "Изменить",
-            buttonTitle: "Сохранить",
+            title: "Change",
+            buttonTitle: "Save",
             englishValue: element.english,
             russianValue: element.russian
           ) { result in

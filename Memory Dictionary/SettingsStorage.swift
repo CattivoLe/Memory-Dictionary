@@ -1,31 +1,16 @@
-import Foundation
+import SwiftUI
 import UserNotifications
 
 final class SettingsStorage: ObservableObject {
-  var isNeedToNotfication: Bool = UserDefaults.isNeedToNotfication {
+  @AppStorage(Keys.isNeedToNotfication) var isNeedToNotfication: Bool = false {
     willSet {
-      UserDefaults.isNeedToNotfication = newValue
       manageMessageNotification(newValue)
     }
   }
   
-  var reminderMessageText: String = UserDefaults.reminderMessageText {
-    willSet {
-      UserDefaults.reminderMessageText = newValue
-    }
-  }
-  
-  var reminderMessageDate: Date = UserDefaults.reminderMessageDate {
-    willSet {
-      UserDefaults.reminderMessageDate = newValue
-    }
-  }
-  
-  var language: Language = UserDefaults.language {
-    willSet {
-      UserDefaults.language = newValue
-    }
-  }
+  @AppStorage(Keys.reminderMessageText) var reminderMessageText: String = String()
+  @AppStorage(Keys.reminderMessageDate) var reminderMessageDate: Date = Date()
+  @AppStorage(Keys.selectedlanguage) var language: Language = .rus
   
   // MARK: - Notification
   
@@ -44,65 +29,19 @@ final class SettingsStorage: ObservableObject {
   }
 }
 
-// MARK: - ReminderMessage
-
-extension UserDefaults {
-  static var isNeedToNotfication: Bool {
-    get {
-      UserDefaults.standard.bool(forKey: Keys.isNeedToNotfication)
-    }
-    set {
-      UserDefaults.standard.set(newValue, forKey: Keys.isNeedToNotfication)
-    }
+extension Date: RawRepresentable {
+  public var rawValue: String {
+    self.timeIntervalSinceReferenceDate.description
   }
   
-  static var reminderMessageText: String {
-    get {
-      UserDefaults.standard.string(forKey: Keys.reminderMessageText) ?? String()
-    }
-    set {
-      UserDefaults.standard.set(newValue, forKey: Keys.reminderMessageText)
-    }
-  }
-  
-  static var reminderMessageDate: Date {
-    get {
-      if let value = UserDefaults.standard.object(forKey: Keys.reminderMessageDate) as? Data,
-         let date = try? JSONDecoder().decode(Date.self, from: value) {
-        return date
-      } else {
-        return Date()
-      }
-    }
-    set {
-      if let encoded = try? JSONEncoder().encode(newValue) {
-        UserDefaults.standard.set(encoded, forKey: Keys.reminderMessageDate)
-      }
-    }
-  }
-}
-
-// MARK: - Settings
-
-extension UserDefaults {
-  static var language: Language {
-    get {
-      if let value = UserDefaults.standard.object(forKey: Keys.selectedlanguage) as? String {
-        return Language(rawValue: value) ?? .rus
-      }
-      else {
-        return .rus
-      }
-    }
-    set {
-      UserDefaults.standard.set(newValue.rawValue, forKey: Keys.selectedlanguage)
-    }
+  public init?(rawValue: String) {
+    self = Date(timeIntervalSinceReferenceDate: Double(rawValue) ?? 0.0)
   }
 }
 
 // MARK: - Keys
 
-extension UserDefaults {
+extension SettingsStorage {
   private struct Keys {
     static let isNeedToNotfication = "isNeedToNotfication"
     static let reminderMessageText = "reminderMessageText"

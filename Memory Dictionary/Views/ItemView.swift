@@ -33,13 +33,13 @@ struct ItemView: View {
         .font(.title)
       
       TextField(text: $englishField) {
-        Text("На английском")
+        Text("In English")
       }
       .textFieldStyle(.roundedBorder)
       .padding(.top, 20)
       
       TextField(text: $russianField) {
-        Text("На русском")
+        Text("In Russian")
       }
       .textFieldStyle(.roundedBorder)
       

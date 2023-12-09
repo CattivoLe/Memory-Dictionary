@@ -13,21 +13,8 @@ struct CategoriesView: View {
   var body: some View {
     NavigationView {
       VStack {
-        HStack {
-          let items = categories.compactMap { $0.items?.compactMap { $0 as? Item } }.flatMap { $0 }
-          Text("Всего:")
-          Text("\(items.count)")
-          
-          Text("Угадано:")
-            .foregroundColor(.green)
-          Text("\(items.filter { $0.shown && $0.answer }.count)")
-          
-          Text("Ошибок:")
-            .foregroundColor(.red)
-          Text("\(items.filter { $0.shown && !$0.answer }.count)")
-        }
-        .font(.headline)
-        .padding(.horizontal, 16)
+        let items = categories.compactMap { $0.items?.compactMap { $0 as? Item } }.flatMap { $0 }
+        HeaderView(items: items)
         
         List {
           ForEach(categories) { category in
