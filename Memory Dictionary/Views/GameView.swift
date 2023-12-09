@@ -100,9 +100,9 @@ struct GameView: View {
               
               Button(
                 action: {
+                  answerButtonTap(answer: compare())
                   isVerified = false
                   translationFieldValue = String()
-                  answerButtonTap(answer: compare())
                 },
                 label: {
                   Text("Next")
@@ -187,9 +187,11 @@ struct GameView: View {
       : currentElement?.english ?? ""
     )
       .trimmingCharacters(in: .whitespacesAndNewlines)
-    return translationFieldValue
+      .lowercased()
+    let translation = translationFieldValue
       .trimmingCharacters(in: .whitespacesAndNewlines)
-      .lowercased() == original.lowercased()
+      .lowercased()
+    return translation == original
   }
   
   // MARK: - Random
