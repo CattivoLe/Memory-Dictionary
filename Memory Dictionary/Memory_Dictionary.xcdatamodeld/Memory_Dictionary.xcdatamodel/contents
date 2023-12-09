@@ -12,6 +12,7 @@
         <attribute name="russian" optional="YES" attributeType="String"/>
         <attribute name="shown" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="voiceRecord" optional="YES" attributeType="Binary"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="items" inverseEntity="Category"/>
     </entity>
 </model>

@@ -27,11 +27,15 @@ struct ContentView: View {
               russian: item.russian ?? "",
               answer: item.answer
             )
-            AnswerView(
+            ItemView(
+              recordData: item.voiceRecord,
               element: element,
               language: settingsStorage.language,
               onEditTap: { element in
                 changeItem(item, element: element)
+              }, 
+              onSaveRecord: { data in
+                saveSountRecord(item: item, data: data)
               }
             )
           } label: {
@@ -94,7 +98,7 @@ struct ContentView: View {
           }
         )
         .sheet(isPresented: $toShowAddItemView) {
-          ItemView(
+          ItemEditView(
             title: "Add new word",
             buttonTitle: "Add"
           ) { result in
@@ -148,6 +152,13 @@ struct ContentView: View {
       offsets.map { items[$0] }.forEach(viewContext.delete)
       saveContext()
     }
+  }
+  
+  // MARK: - Save record
+  
+  private func saveSountRecord(item: FetchedResults<Item>.Element, data: Data) {
+    item.voiceRecord = data
+    saveContext()
   }
   
   private func saveContext() {

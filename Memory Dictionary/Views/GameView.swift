@@ -1,7 +1,11 @@
 import SwiftUI
+import AVKit
 
 struct GameView: View {
   @ObservedObject private var settingsStorage = SettingsStorage()
+  
+  @State private var audioSession: AVAudioSession?
+  @State private var audioPlayer: AVAudioPlayer?
   
   @State private var isShowTranslation: Bool = false
   @State private var newElement: FetchedResults<Item>.Element?
@@ -69,6 +73,18 @@ struct GameView: View {
             .multilineTextAlignment(.center)
             .font(.largeTitle)
             .padding(.top, 100)
+          
+          if let voice = element.voiceRecord {
+            Button(
+              action: {
+                playVoice(voice)
+              },
+              label: {
+                Text("Say it")
+                  .font(.title2)
+              }
+            )
+          }
         }
         
         Spacer()
@@ -109,6 +125,7 @@ struct GameView: View {
     .background(backgroundColor)
     .navigationTitle(title)
     .onAppear {
+      setupAudio()
       random()
     }
     .animation(.easeInOut(duration: 0.3).repeatCount(1, autoreverses: true), value: backgroundColor)
@@ -159,11 +176,39 @@ struct GameView: View {
     startDate = Date.now
     timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
   }
+  
+  // MARK: - SetupAudio
+  
+  private func setupAudio() {
+    do {
+      audioSession = AVAudioSession.sharedInstance()
+      try audioSession?.setCategory(.playAndRecord, options: .defaultToSpeaker)
+      try audioSession?.setActive(true)
+      try audioSession?.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+    } catch {
+      print(error.localizedDescription)
+    }
+  }
+  
+  // MARK: - Play voice
+  
+  private func playVoice(_ data: Data) {
+    do {
+      audioPlayer = try AVAudioPlayer(data: data)
+      guard let player = audioPlayer else { return }
+      player.play()
+    } catch let error {
+      print("Cannot play sound. \(error.localizedDescription)")
+    }
+  }
 }
 
 // MARK: - Preview
 
 #Preview {
   let item = Item(context: PersistenceController.preview.container.viewContext)
+  item.russian = "Rus"
+  item.english = "Eng"
+  item.voiceRecord = Data()
   return GameView(title: "Title", items: [item], onAnswerTap: { _, _, _ in })
 }

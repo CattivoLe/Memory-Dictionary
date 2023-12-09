@@ -1,70 +1,174 @@
 import SwiftUI
+import AVKit
 
 struct ItemView: View {
-  let title: String
-  let buttonTitle: String
-  let englishValue: String?
-  let russianValue: String?
+  @State private var audioSession: AVAudioSession?
+  @State private var recorder: AVAudioRecorder?
+  @State private var audioPlayer: AVAudioPlayer?
   
-  init(
-    title: String,
-    buttonTitle: String,
-    englishValue: String? = nil,
-    russianValue: String? = nil,
-    onButtonTap: ((Element) -> Void)? = nil
-  ) {
-    self.title = title
-    self.buttonTitle = buttonTitle
-    self.englishValue = englishValue
-    self.russianValue = russianValue
-    self.onButtonTap = onButtonTap
-  }
+  @State private var toShowEditView = false
+  @State private var isRecord = false
+  @State private var record: URL?
   
-  var onButtonTap: ((Element) -> Void)?
+  @State var recordData: Data?
   
-  @State private var englishField = String()
-  @State private var russianField = String()
+  let element: Element
+  let language: Language
+  let onEditTap: (Element) -> Void
+  let onSaveRecord: (Data) -> Void
   
   // MARK: - Body
   
   var body: some View {
-    VStack(spacing: 16) {
-      Text(title)
-        .font(.title)
-      
-      TextField(text: $englishField) {
-        Text("In English")
-      }
-      .textFieldStyle(.roundedBorder)
-      .padding(.top, 20)
-      
-      TextField(text: $russianField) {
-        Text("In Russian")
-      }
-      .textFieldStyle(.roundedBorder)
-      
-      Button(
-        action: {
-          let result = Element(
-            english: englishField,
-            russian: russianField,
-            answer: false
-          )
-          onButtonTap?(result)
-        }, 
-        label: {
-          Text(buttonTitle)
-            .frame(maxWidth: .infinity, maxHeight: 40)
+    VStack {
+      var text: String {
+        switch language {
+        case .eng: return element.russian
+        case .rus: return element.english
         }
-      )
-      .buttonStyle(.borderedProminent)
+      }
+      Text(text)
+        .multilineTextAlignment(.center)
+        .font(.largeTitle)
       
-      Spacer()
+      HStack(spacing: 20) {
+        Button {
+          recording()
+        } label: {
+          ZStack {
+            let color: Color = isRecord ? .red : .white
+            Text("REC")
+              .foregroundStyle(.red)
+            Circle()
+              .stroke(color)
+              .frame(width: 50)
+          }
+        }
+        
+        if record != nil || recordData != nil {
+          Button {
+            playRecord()
+          } label: {
+            ZStack {
+              Text("PLAY")
+                .foregroundStyle(.green)
+              Circle()
+                .stroke(.green)
+                .frame(width: 50)
+            }
+          }
+        }
+      }
+      .padding(.top, 50)
     }
     .padding()
+    .toolbar {
+      ToolbarItem {
+        Button(
+          action: {
+            toShowEditView.toggle()
+          },
+          label: {
+            Text("Change")
+          }
+        )
+        .sheet(isPresented: $toShowEditView) {
+          ItemEditView(
+            title: "Change",
+            buttonTitle: "Save",
+            englishValue: element.english,
+            russianValue: element.russian
+          ) { result in
+            onEditTap(result)
+            toShowEditView.toggle()
+          }
+          .presentationDetents([.medium])
+        }
+      }
+    }
     .onAppear {
-      englishField = englishValue ?? String()
-      russianField = russianValue ?? String()
+      setupRecorder()
+    }
+  }
+  
+  // MARK: - SetupRecorder
+  
+  private func setupRecorder() {
+    do {
+      audioSession = AVAudioSession.sharedInstance()
+      try audioSession?.setCategory(.playAndRecord, options: .defaultToSpeaker)
+      try audioSession?.setActive(true)
+      try audioSession?.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
+      Task {
+        await AVAudioApplication.requestRecordPermission()
+      }
+    } catch {
+      print(error.localizedDescription)
+    }
+  }
+  
+  // MARK: - Record
+  
+  private func recording() {
+    if isRecord {
+      recorder?.stop()
+      isRecord.toggle()
+      getAudio()
+    } else {
+      do {
+        guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+        let fileName = url.appendingPathComponent("\(element.english).m4a")
+        let settings = [
+          AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+          AVSampleRateKey: 12000,
+          AVNumberOfChannelsKey: 1,
+          AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+        ]
+        recorder = try AVAudioRecorder(url: fileName, settings: settings)
+        recorder?.record()
+        isRecord.toggle()
+      } catch {
+        print(error.localizedDescription)
+      }
+    }
+  }
+  
+  // MARK: - GetAudio
+  
+  private func getAudio() {
+    do {
+      guard let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+      let result = try FileManager.default.contentsOfDirectory(
+        at: url,
+        includingPropertiesForKeys: nil,
+        options: .producesRelativePathURLs
+      )
+      recordData = nil
+      record = result.first(where: { url in
+        url.relativeString == "\(element.english).m4a"
+      })
+      guard let recordUrl = record, let data = try? Data(contentsOf: recordUrl) else { return }
+      onSaveRecord(data)
+    } catch {
+      print(error.localizedDescription)
+    }
+  }
+  
+  // MARK: - Play
+  
+  private func playRecord() {
+    let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    let fileName = url.appendingPathComponent("\(element.english).m4a")
+    do {
+      if let data = recordData {
+        audioPlayer = try AVAudioPlayer(data: data)
+      } else {
+        audioPlayer = try AVAudioPlayer(contentsOf: fileName)
+      }
+      guard let player = audioPlayer else { return }
+      player.play()
+    } catch let error {
+      print("Cannot play sound. \(error.localizedDescription)")
     }
   }
 }
@@ -72,5 +176,11 @@ struct ItemView: View {
 // MARK: - Preview
 
 #Preview {
-  ItemView(title: "Title", buttonTitle: "Button title")
+  ItemView(
+    recordData: nil, 
+    element: Element(english: "Cat", russian: "Кот", answer: false),
+    language: .eng,
+    onEditTap: { _ in },
+    onSaveRecord: { _ in }
+  )
 }
