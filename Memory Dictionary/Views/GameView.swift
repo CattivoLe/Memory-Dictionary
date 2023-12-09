@@ -1,12 +1,6 @@
 import SwiftUI
 
 struct GameView: View {
-  @Environment(\.managedObjectContext) private var viewContext
-  @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)], animation: .default)
-  private var items: FetchedResults<Item>
-  
-  let onAnswerTap: ((FetchedResults<Item>.Element?, Bool, String) -> Void)
-  
   @ObservedObject private var settingsStorage = SettingsStorage()
   
   @State private var isShowTranslation: Bool = false
@@ -18,6 +12,10 @@ struct GameView: View {
   @State private var startDate = Date.now
   @State private var timeElapsed = String()
   @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+  
+  let title: String
+  let items: [FetchedResults<Item>.Element]
+  let onAnswerTap: ((FetchedResults<Item>.Element?, Bool, String) -> Void)
   
   // MARK: - Body
   
@@ -109,7 +107,7 @@ struct GameView: View {
     }
     .padding()
     .background(backgroundColor)
-    .navigationTitle("All words")
+    .navigationTitle(title)
     .onAppear {
       random()
     }
@@ -119,7 +117,6 @@ struct GameView: View {
   private func nextButtonTap(answer: Bool) {
     isShowTranslation = false
     onAnswerTap(currentElement, answer, timeElapsed)
-    shownItem(currentElement)
     random()
     isVerified = false
     translationFieldValue = String()
@@ -134,7 +131,6 @@ struct GameView: View {
     isShowTranslation = true
     isVerified = true
     onAnswerTap(currentElement, answer, timeElapsed)
-    shownItem(currentElement)
   }
   
   private func compare() -> Bool {
@@ -163,25 +159,11 @@ struct GameView: View {
     startDate = Date.now
     timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
   }
-  
-  // MARK: - ShownItem
-  
-  private func shownItem(_ item: FetchedResults<Item>.Element?) {
-    withAnimation {
-      item?.shown = true
-      do {
-        try viewContext.save()
-      } catch {
-        let nsError = error as NSError
-        fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-      }
-    }
-  }
 }
 
 // MARK: - Preview
 
 #Preview {
-  GameView(onAnswerTap: { _, _, _ in })
-    .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+  let item = Item(context: PersistenceController.preview.container.viewContext)
+  return GameView(title: "Title", items: [item], onAnswerTap: { _, _, _ in })
 }

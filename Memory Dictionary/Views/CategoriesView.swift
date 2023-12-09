@@ -65,7 +65,7 @@ struct CategoriesView: View {
         }
         
         NavigationLink {
-          GameView() { element, answer, time in
+          GameView(title: "All words", items: items) { element, answer, time in
             changeItem(element, answer: answer, time: time)
           }
         } label: {
@@ -105,6 +105,7 @@ struct CategoriesView: View {
     withAnimation {
       item?.answer = answer
       item?.answerTime = time
+      item?.shown = true
       saveContext()
     }
   }

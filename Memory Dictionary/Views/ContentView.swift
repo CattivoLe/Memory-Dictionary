@@ -16,11 +16,11 @@ struct ContentView: View {
   
   var body: some View {
     VStack {
-      let filtredItems = items.filter { $0.category?.title == category.title }
-      HeaderView(items: filtredItems)
+      let items = items.filter { $0.category?.title == category.title }
+      HeaderView(items: items)
       
       List {
-        ForEach(filtredItems) { item in
+        ForEach(items) { item in
           NavigationLink {
             let element = Element(
               english: item.english ?? "",
@@ -67,30 +67,41 @@ struct ContentView: View {
         }
         .onDelete(perform: deleteItems)
       }
-      .navigationTitle(category.title ?? "")
-      .toolbar {
-        ToolbarItem {
-          Button(
-            action: {
-              toShowAddItemView.toggle()
-            },
-            label: {
-              Label(
-                title: { Text("Add") },
-                icon: { Image(systemName: "plus.circle") }
-              )
-            }
-          )
-          .sheet(isPresented: $toShowAddItemView) {
-            ItemView(
-              title: "Add new word",
-              buttonTitle: "Add"
-            ) { result in
-              addNewItem(result)
-              toShowAddItemView.toggle()
-            }
-            .presentationDetents([.medium])
+      
+      NavigationLink {
+        GameView(title: category.title ?? "", items: items) { element, answer, time in
+          changeItem(element, answer: answer, time: time)
+        }
+      } label: {
+        Text("Play")
+          .frame(maxWidth: .infinity, maxHeight: 40)
+      }
+      .buttonStyle(.borderedProminent)
+      .padding(.horizontal, 16)
+    }
+    .navigationTitle(category.title ?? "")
+    .toolbar {
+      ToolbarItem {
+        Button(
+          action: {
+            toShowAddItemView.toggle()
+          },
+          label: {
+            Label(
+              title: { Text("Add") },
+              icon: { Image(systemName: "plus.circle") }
+            )
           }
+        )
+        .sheet(isPresented: $toShowAddItemView) {
+          ItemView(
+            title: "Add new word",
+            buttonTitle: "Add"
+          ) { result in
+            addNewItem(result)
+            toShowAddItemView.toggle()
+          }
+          .presentationDetents([.medium])
         }
       }
     }
@@ -117,6 +128,15 @@ struct ContentView: View {
     withAnimation {
       item.english = element.english
       item.russian = element.russian
+      saveContext()
+    }
+  }
+  
+  private func changeItem(_ item: FetchedResults<Item>.Element?, answer: Bool, time: String) {
+    withAnimation {
+      item?.answer = answer
+      item?.answerTime = time
+      item?.shown = true
       saveContext()
     }
   }
