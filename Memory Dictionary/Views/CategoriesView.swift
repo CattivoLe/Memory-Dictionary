@@ -64,6 +64,20 @@ struct CategoriesView: View {
           }
         }
         
+        let mistakenesItems = items.filter { !$0.answer && $0.shown }
+        if !mistakenesItems.isEmpty {
+          NavigationLink {
+            GameView(title: "All words", items: mistakenesItems) { element, answer, time in
+              changeItem(element, answer: answer, time: time)
+            }
+          } label: {
+            Text("Mistakenes")
+              .frame(maxWidth: .infinity, maxHeight: 20)
+          }
+          .buttonStyle(.borderedProminent)
+          .padding(.horizontal, 16)
+        }
+        
         NavigationLink {
           GameView(title: "All words", items: items) { element, answer, time in
             changeItem(element, answer: answer, time: time)
