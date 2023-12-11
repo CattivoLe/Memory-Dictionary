@@ -120,6 +120,11 @@ struct CategoriesView: View {
       item?.answer = answer
       item?.answerTime = time
       item?.shown = true
+      if answer {
+        item?.rightCount += 1
+      } else {
+        item?.wrongCount += 1
+      }
       saveContext()
     }
   }

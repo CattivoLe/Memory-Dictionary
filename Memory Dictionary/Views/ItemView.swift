@@ -60,6 +60,20 @@ struct ItemView: View {
         }
       }
       .padding(.top, 50)
+      
+      HStack(spacing: 50) {
+        Text("Right: \(element.right)")
+          .foregroundColor(.green)
+        Text("Wrong: \(element.wrong)")
+          .foregroundColor(.red)
+      }
+      .font(.title3)
+      .padding(.top, 50)
+      
+      if let time = element.answerTime, element.answer {
+        Text("Answer time: \(time)")
+          .padding(.top, 20)
+      }
     }
     .padding()
     .toolbar {
@@ -177,8 +191,15 @@ struct ItemView: View {
 
 #Preview {
   ItemView(
-    recordData: nil, 
-    element: Element(english: "Cat", russian: "Кот", answer: false),
+    recordData: nil,
+    element: Element(
+      english: "Cat",
+      russian: "Кот",
+      answer: false,
+      right: 10,
+      wrong: 0,
+      answerTime: "1 sec"
+    ),
     language: .eng,
     onEditTap: { _ in },
     onSaveRecord: { _ in }

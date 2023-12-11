@@ -25,7 +25,10 @@ struct ContentView: View {
             let element = Element(
               english: item.english ?? "",
               russian: item.russian ?? "",
-              answer: item.answer
+              answer: item.answer,
+              right: item.rightCount,
+              wrong: item.wrongCount, 
+              answerTime: item.answerTime
             )
             ItemView(
               recordData: item.voiceRecord,
@@ -63,10 +66,6 @@ struct ContentView: View {
               }
             }
             Text(title)
-            if let time = item.answerTime, item.answer {
-              Text(time)
-                .foregroundColor(.green)
-            }
           }
         }
         .onDelete(perform: deleteItems)
@@ -155,6 +154,11 @@ struct ContentView: View {
       item?.answer = answer
       item?.answerTime = time
       item?.shown = true
+      if answer {
+        item?.rightCount += 1
+      } else {
+        item?.wrongCount += 1
+      }
       saveContext()
     }
   }

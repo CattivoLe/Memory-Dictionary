@@ -48,7 +48,10 @@ struct ItemEditView: View {
           let result = Element(
             english: englishField,
             russian: russianField,
-            answer: false
+            answer: false,
+            right: 0,
+            wrong: 0, 
+            answerTime: nil
           )
           onButtonTap?(result)
         }, 
