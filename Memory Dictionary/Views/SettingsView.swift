@@ -21,10 +21,8 @@ struct SettingsView: View {
           Toggle("", isOn: $settingsStorage.isNeedToNotfication)
             .toggleStyle(SwitchToggleStyle(tint: .blue))
         }
-        .frame(height: 50)
         
         TextField("Message text", text: $settingsStorage.reminderMessageText)
-          .frame(height: 50)
       }
       
       Section("Settings") {
@@ -35,7 +33,6 @@ struct SettingsView: View {
           }
         }
         .pickerStyle(SegmentedPickerStyle())
-        .frame(height: 50)
       }
       
       Button(

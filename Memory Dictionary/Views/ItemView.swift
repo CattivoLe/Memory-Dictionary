@@ -31,7 +31,21 @@ struct ItemView: View {
         .multilineTextAlignment(.center)
         .font(.largeTitle)
       
-      HStack(spacing: 20) {
+      HStack(spacing: 50) {
+        Text("Right: \(element.right)")
+          .foregroundColor(.green)
+        Text("Wrong: \(element.wrong)")
+          .foregroundColor(.red)
+      }
+      .font(.title3)
+      .padding(.top, 20)
+      
+      if let time = element.answerTime, element.answer {
+        Text("Answer time: \(time)")
+          .padding(.top, 10)
+      }
+      
+      HStack(spacing: 50) {
         Button {
           recording()
         } label: {
@@ -60,20 +74,6 @@ struct ItemView: View {
         }
       }
       .padding(.top, 50)
-      
-      HStack(spacing: 50) {
-        Text("Right: \(element.right)")
-          .foregroundColor(.green)
-        Text("Wrong: \(element.wrong)")
-          .foregroundColor(.red)
-      }
-      .font(.title3)
-      .padding(.top, 50)
-      
-      if let time = element.answerTime, element.answer {
-        Text("Answer time: \(time)")
-          .padding(.top, 20)
-      }
     }
     .padding()
     .toolbar {
@@ -195,7 +195,7 @@ struct ItemView: View {
     element: Element(
       english: "Cat",
       russian: "Кот",
-      answer: false,
+      answer: true,
       right: 10,
       wrong: 0,
       answerTime: "1 sec"

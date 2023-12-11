@@ -15,6 +15,8 @@ struct CategoriesView: View {
       VStack {
         let items = categories.compactMap { $0.items?.compactMap { $0 as? Item } }.flatMap { $0 }
         HeaderView(items: items)
+          .padding(.top)
+          .padding(.horizontal, 25)
         
         List {
           ForEach(categories) { category in

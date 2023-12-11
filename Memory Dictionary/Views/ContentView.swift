@@ -18,6 +18,8 @@ struct ContentView: View {
     VStack {
       let items = items.filter { $0.category?.title == category.title }
       HeaderView(items: items)
+        .padding(.top)
+        .padding(.horizontal, 25)
       
       List {
         ForEach(items) { item in
@@ -49,15 +51,16 @@ struct ContentView: View {
                 return .gray
               }
             }
-            if item.answer {
-              Image(systemName: "cat.fill")
-                .foregroundColor(color)
-            } else {
-              Rectangle()
-                .fill(color)
-                .frame(width: 20, height: 20)
-                .cornerRadius(10)
+            var image: String {
+              if item.shown {
+                return item.answer ? "cat.fill" : "xmark.circle"
+              } else {
+                return "circle"
+              }
             }
+            
+            Image(systemName: image)
+              .foregroundColor(color)
             
             var title: String {
               switch settingsStorage.language {
