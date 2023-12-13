@@ -101,21 +101,25 @@ struct GameView: View {
               label: {
                 Text("Сheck")
                   .font(.title)
+                  .frame(width: 100)
               }
             )
             .disabled(translationFieldValue.isEmpty || isVerified)
             
-            Spacer()
-            
-            Button(
-              action: {
-                nextButtonTap(answer: compare())
-              },
-              label: {
-                Text("Next")
-                  .font(.title)
-              }
-            )
+            if !settingsStorage.isNextAfterAnswer {
+              Spacer()
+              
+              Button(
+                action: {
+                  nextButtonTap(answer: compare())
+                },
+                label: {
+                  Text("Next")
+                    .font(.title)
+                    .frame(width: 100)
+                }
+              )
+            }
           }
           .buttonStyle(.bordered)
         }
@@ -148,6 +152,9 @@ struct GameView: View {
     isShowTranslation = true
     isVerified = true
     onAnswerTap(currentElement, answer, timeElapsed)
+    if settingsStorage.isNextAfterAnswer {
+      nextButtonTap(answer: answer)
+    }
   }
   
   private func compare() -> Bool {

@@ -5,10 +5,7 @@ struct SettingsView: View {
   @ObservedObject private var settingsStorage = SettingsStorage()
   
   @State private var toShowRequestPermissionAlert: Bool = false
-  @State private var toShowClearResultsAlert: Bool = false
   @State private var languages: [Language] = [.rus, .eng]
-  
-  var onClearResults: (() -> Void)?
   
   // MARK: - Body
   
@@ -33,16 +30,13 @@ struct SettingsView: View {
           }
         }
         .pickerStyle(SegmentedPickerStyle())
+        
+        Toggle("Next after answer", isOn: $settingsStorage.isNextAfterAnswer)
+          .toggleStyle(SwitchToggleStyle(tint: .blue))
+        
+        Toggle("Only wrongs", isOn: $settingsStorage.isOnlyWrongs)
+          .toggleStyle(SwitchToggleStyle(tint: .blue))
       }
-      
-      Button(
-        action: {
-          toShowClearResultsAlert.toggle()
-        },
-        label: {
-          Text("Clear all results")
-        }
-      )
     }
     .navigationTitle("Settings")
     .onAppear {
@@ -56,14 +50,6 @@ struct SettingsView: View {
         title: Text("Notification has been disabled for this app"),
         message: Text("Please go to settings to enable it now"),
         primaryButton: .default(Text("Go To Settings")) { goToSettings() },
-        secondaryButton: .cancel()
-      )
-    }
-    .alert(isPresented: $toShowClearResultsAlert) {
-      Alert(
-        title: Text("Attention"),
-        message: Text("All saved results will be reset and this action cannot be rewert."),
-        primaryButton: .default(Text("Do it")) { onClearResults?() },
         secondaryButton: .cancel()
       )
     }

@@ -1,24 +1,28 @@
 import SwiftUI
 
-struct HeaderView: View {  
-  let items: [Item]
+struct HeaderView: View {
+  @Binding var itemsCount: Int
+  @Binding var rightCount: Int
+  @Binding var wrongCount: Int
+  
+  // MARK: - Body
   
   var body: some View {
     HStack {
       Image(systemName: "book")
-      Text("\(items.count)")
+      Text("\(itemsCount)")
       
       Spacer()
       
-      Image(systemName: "cat.fill")
+      Image(systemName: "brain")
         .foregroundColor(.green)
-      Text("\(items.filter { $0.shown && $0.answer }.count)")
+      Text("\(rightCount)")
       
       Spacer()
       
       Image(systemName: "xmark.circle")
         .foregroundColor(.red)
-      Text("\(items.filter { $0.shown && !$0.answer }.count)")
+      Text("\(wrongCount)")
     }
     .font(.headline)
   }
@@ -27,5 +31,9 @@ struct HeaderView: View {
 // MARK: - Preview
 
 #Preview {
-  HeaderView(items: [])
+  HeaderView(
+    itemsCount: .constant(350),
+    rightCount: .constant(300),
+    wrongCount: .constant(50)
+  )
 }

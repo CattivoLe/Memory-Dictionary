@@ -1,7 +1,7 @@
 import SwiftUI
 import CoreData
 
-struct ContentView: View {
+struct ElementsView: View {
   @Environment(\.managedObjectContext) private var viewContext
   @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)], animation: .default)
   private var items: FetchedResults<Item>
@@ -9,6 +9,11 @@ struct ContentView: View {
   @ObservedObject private var settingsStorage = SettingsStorage()
   
   @State private var toShowAddItemView = false
+  @State private var toShowClearResultsAlert: Bool = false
+  
+  @State private var itemsCount = 0
+  @State private var rightCount = 0
+  @State private var wrongCount = 0
   
   let category: FetchedResults<Category>.Element
   
@@ -17,7 +22,11 @@ struct ContentView: View {
   var body: some View {
     VStack {
       let items = items.filter { $0.category?.title == category.title }
-      HeaderView(items: items)
+      HeaderView(
+        itemsCount: $itemsCount,
+        rightCount: $rightCount,
+        wrongCount: $wrongCount
+      )
         .padding(.top)
         .padding(.horizontal, 25)
       
@@ -32,7 +41,7 @@ struct ContentView: View {
               wrong: item.wrongCount, 
               answerTime: item.answerTime
             )
-            ItemView(
+            ElementView(
               recordData: item.voiceRecord,
               element: element,
               language: settingsStorage.language,
@@ -53,7 +62,7 @@ struct ContentView: View {
             }
             var image: String {
               if item.shown {
-                return item.answer ? "cat.fill" : "xmark.circle"
+                return item.answer ? "brain" : "xmark.circle"
               } else {
                 return "circle"
               }
@@ -74,33 +83,39 @@ struct ContentView: View {
         .onDelete(perform: deleteItems)
       }
       
-      let mistakenesItems = items.filter { !$0.answer && $0.shown }
-      if !mistakenesItems.isEmpty {
+      let gameItems = settingsStorage.isOnlyWrongs
+      ? items.filter { !$0.answer }
+      : items
+      
+      if !gameItems.isEmpty {
         NavigationLink {
-          GameView(title: "All words", items: mistakenesItems) { element, answer, time in
+          GameView(title: "All words", items: gameItems) { element, answer, time in
             changeItem(element, answer: answer, time: time)
           }
         } label: {
-          Text("Mistakenes")
-            .frame(maxWidth: .infinity, maxHeight: 20)
+          Text("Play")
+            .frame(maxWidth: .infinity, maxHeight: 40)
         }
         .buttonStyle(.borderedProminent)
         .padding(.horizontal, 16)
       }
-      
-      NavigationLink {
-        GameView(title: category.title ?? "", items: items) { element, answer, time in
-          changeItem(element, answer: answer, time: time)
-        }
-      } label: {
-        Text("Play")
-          .frame(maxWidth: .infinity, maxHeight: 40)
-      }
-      .buttonStyle(.borderedProminent)
-      .padding(.horizontal, 16)
     }
     .navigationTitle(category.title ?? "")
     .toolbar {
+      ToolbarItem() {
+        Button(
+          action: {
+            toShowClearResultsAlert.toggle()
+          },
+          label: {
+            Label(
+              title: { Text("Clear") },
+              icon: { Image(systemName: "clear") }
+            )
+          }
+        )
+      }
+      
       ToolbarItem {
         Button(
           action: {
@@ -114,7 +129,7 @@ struct ContentView: View {
           }
         )
         .sheet(isPresented: $toShowAddItemView) {
-          ItemEditView(
+          ElementEditView(
             title: "Add new word",
             buttonTitle: "Add"
           ) { result in
@@ -125,9 +140,20 @@ struct ContentView: View {
         }
       }
     }
+    .alert(isPresented: $toShowClearResultsAlert) {
+      Alert(
+        title: Text("Attention"),
+        message: Text("All saved results will be reset and this action cannot be rewert."),
+        primaryButton: .default(Text("Do it")) { clearResults() },
+        secondaryButton: .cancel()
+      )
+    }
+    .onAppear {
+      makeHeaderViewData()
+    }
   }
   
-  // MARK: - AddNewItem
+  // MARK: - Add New Item
   
   private func addNewItem(_ item: Element) {
     withAnimation {
@@ -164,15 +190,32 @@ struct ContentView: View {
       }
       saveContext()
     }
+    makeHeaderViewData()
   }
   
   // MARK: - DeleteItems
   
   private func deleteItems(offsets: IndexSet) {
+    let items = items.filter { $0.category?.title == category.title }
     withAnimation {
       offsets.map { items[$0] }.forEach(viewContext.delete)
       saveContext()
     }
+  }
+  
+  // MARK: - Clear Results
+  
+  private func clearResults() {
+    let items = items.filter { $0.category?.title == category.title }
+    items.forEach { item in
+      item.answer = false
+      item.answerTime = ""
+      item.shown = false
+      item.rightCount = 0
+      item.wrongCount = 0
+    }
+    saveContext()
+    makeHeaderViewData()
   }
   
   // MARK: - Save record
@@ -182,6 +225,8 @@ struct ContentView: View {
     saveContext()
   }
   
+  // MARK: - Save Context
+  
   private func saveContext() {
     do {
       try viewContext.save()
@@ -189,6 +234,15 @@ struct ContentView: View {
       let nsError = error as NSError
       fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
     }
+  }
+  
+  // MARK: - Make header viewData
+  
+  private func makeHeaderViewData() {
+    let items = items.filter { $0.category?.title == category.title }
+    itemsCount = items.count
+    rightCount = items.filter { $0.shown && $0.answer }.count
+    wrongCount = items.filter { $0.shown && !$0.answer }.count
   }
 }
 
@@ -203,6 +257,6 @@ struct ContentView: View {
   newItem.russian = "Кот"
   
   category.items = [newItem]
-  return ContentView(category: category)
+  return ElementsView(category: category)
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

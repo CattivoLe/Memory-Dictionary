@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ItemEditView: View {
+struct ElementEditView: View {
   let title: String
   let buttonTitle: String
   let englishValue: String?
@@ -75,5 +75,5 @@ struct ItemEditView: View {
 // MARK: - Preview
 
 #Preview {
-  ItemEditView(title: "Title", buttonTitle: "Button title")
+  ElementEditView(title: "Title", buttonTitle: "Button title")
 }

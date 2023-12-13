@@ -11,6 +11,8 @@ final class SettingsStorage: ObservableObject {
   @AppStorage(Keys.reminderMessageText) var reminderMessageText: String = String()
   @AppStorage(Keys.reminderMessageDate) var reminderMessageDate: Date = Date()
   @AppStorage(Keys.selectedlanguage) var language: Language = .rus
+  @AppStorage(Keys.isNextAfterAnswer) var isNextAfterAnswer: Bool = false
+  @AppStorage(Keys.isOnlyWrongs) var isOnlyWrongs: Bool = false
   
   // MARK: - Notification
   
@@ -28,6 +30,8 @@ final class SettingsStorage: ObservableObject {
     )
   }
 }
+
+// MARK: - Date RawRepresentable
 
 extension Date: RawRepresentable {
   public var rawValue: String {
@@ -47,5 +51,7 @@ extension SettingsStorage {
     static let reminderMessageText = "reminderMessageText"
     static let reminderMessageDate = "reminderMessageDate"
     static let selectedlanguage = "selectedlanguage"
+    static let isNextAfterAnswer = "isNextAfterAnswer"
+    static let isOnlyWrongs = "isOnlyWrongs"
   }
 }

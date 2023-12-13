@@ -1,7 +1,7 @@
 import SwiftUI
 import AVKit
 
-struct ItemView: View {
+struct ElementView: View {
   @State private var audioSession: AVAudioSession?
   @State private var recorder: AVAudioRecorder?
   @State private var audioPlayer: AVAudioPlayer?
@@ -87,7 +87,7 @@ struct ItemView: View {
           }
         )
         .sheet(isPresented: $toShowEditView) {
-          ItemEditView(
+          ElementEditView(
             title: "Change",
             buttonTitle: "Save",
             englishValue: element.english,
@@ -190,7 +190,7 @@ struct ItemView: View {
 // MARK: - Preview
 
 #Preview {
-  ItemView(
+  ElementView(
     recordData: nil,
     element: Element(
       english: "Cat",
