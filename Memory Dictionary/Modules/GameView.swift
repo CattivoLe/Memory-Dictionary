@@ -2,6 +2,7 @@ import SwiftUI
 import AVKit
 
 struct GameView: View {
+  @Environment(\.dismiss) var dismiss
   @ObservedObject private var settingsStorage = SettingsStorage()
   
   @State private var audioSession: AVAudioSession?
@@ -16,6 +17,7 @@ struct GameView: View {
   @State private var startDate = Date.now
   @State private var timeElapsed = String()
   @State private var timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+  @State private var toShowFinishAlert: Bool = false
   
   let title: String
   let items: [FetchedResults<Item>.Element]
@@ -24,26 +26,35 @@ struct GameView: View {
   // MARK: - Body
   
   var body: some View {
-    VStack(spacing: .zero) {
+    VStack(alignment: .center, spacing: .zero) {
       HStack {
-        VStack {
+        if settingsStorage.isOnlyWrongs {
           HStack {
-            Text("Всего слов:")
+            Text("Left:")
             Text("\(items.count)")
             Spacer()
           }
-          HStack {
-            Text("Угадано:")
-            Text("\(items.filter { $0.shown && $0.answer }.count)")
-            Spacer()
+          .font(.title)
+        } else {
+          VStack {
+            HStack {
+              Text("Всего слов:")
+              Text("\(items.count)")
+              Spacer()
+            }
+            HStack {
+              Text("Угадано:")
+              Text("\(items.filter { $0.shown && $0.answer }.count)")
+              Spacer()
+            }
+            HStack {
+              Text("Ошибок:")
+              Text("\(items.filter { $0.shown && !$0.answer }.count)")
+              Spacer()
+            }
           }
-          HStack {
-            Text("Ошибок:")
-            Text("\(items.filter { $0.shown && !$0.answer }.count)")
-            Spacer()
-          }
+          .font(.headline)
         }
-        .font(.headline)
         
         Text(timeElapsed)
           .font(.title)
@@ -128,6 +139,12 @@ struct GameView: View {
     .padding()
     .background(backgroundColor)
     .navigationTitle(title)
+    .alert(isPresented: $toShowFinishAlert, content: {
+      Alert(
+        title: Text("Finish"),
+        dismissButton: .default(Text("Ok")) { dismiss() }
+      )
+    })
     .onAppear {
       setupAudio()
       random()
@@ -136,6 +153,10 @@ struct GameView: View {
   }
   
   private func nextButtonTap(answer: Bool) {
+    guard items.count > 1 else {
+      toShowFinishAlert.toggle()
+      return
+    }
     isShowTranslation = false
     onAnswerTap(currentElement, answer, timeElapsed)
     random()
@@ -175,7 +196,7 @@ struct GameView: View {
   
   private func random() {
     newElement = items.randomElement()
-    if newElement == currentElement {
+    if newElement != currentElement {
       currentElement = newElement
     } else {
       currentElement = items.randomElement()
