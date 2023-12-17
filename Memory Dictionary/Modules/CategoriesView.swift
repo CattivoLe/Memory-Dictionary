@@ -31,7 +31,7 @@ struct CategoriesView: View {
         List {
           ForEach(categories) { category in
             NavigationLink {
-              ElementsView(category: category)
+              ElementsView(category: category, onElementChanged: { makeHeaderViewData() })
                 .environment(\.managedObjectContext, viewContext)
             } label: {
               Text(category.title ?? "")
@@ -152,10 +152,8 @@ struct CategoriesView: View {
       } else {
         item?.wrongCount += 1
       }
-      saveContext()
     }
-    
-    makeHeaderViewData()
+    saveContext()
   }
   
   // MARK: - Clear Results
@@ -164,14 +162,10 @@ struct CategoriesView: View {
     categories.forEach { category in
       category.items?.forEach { element in
         (element as? Item)?.answer = false
-        (element as? Item)?.answerTime = ""
         (element as? Item)?.shown = false
-        (element as? Item)?.rightCount = 0
-        (element as? Item)?.wrongCount = 0
       }
     }
     saveContext()
-    makeHeaderViewData()
   }
   
   // MARK: - Save Context
@@ -183,6 +177,7 @@ struct CategoriesView: View {
       let nsError = error as NSError
       fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
     }
+    makeHeaderViewData()
   }
   
   // MARK: - Make header viewData

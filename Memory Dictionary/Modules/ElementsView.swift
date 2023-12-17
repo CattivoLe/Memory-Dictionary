@@ -16,6 +16,7 @@ struct ElementsView: View {
   @State private var wrongCount = 0
   
   let category: FetchedResults<Category>.Element
+  let onElementChanged: () -> Void
   
   // MARK: - Body
   
@@ -164,8 +165,8 @@ struct ElementsView: View {
       var categoryObjects = category.items?.allObjects as? [Item] ?? []
       categoryObjects.append(newItem)
       category.items = NSSet(array: categoryObjects)
-      saveContext()
     }
+    saveContext()
   }
   
   // MARK: - ChangeItem
@@ -174,8 +175,8 @@ struct ElementsView: View {
     withAnimation {
       item.english = element.english
       item.russian = element.russian
-      saveContext()
     }
+    saveContext()
   }
   
   private func changeItem(_ item: FetchedResults<Item>.Element?, answer: Bool, time: String) {
@@ -188,9 +189,8 @@ struct ElementsView: View {
       } else {
         item?.wrongCount += 1
       }
-      saveContext()
     }
-    makeHeaderViewData()
+    saveContext()
   }
   
   // MARK: - DeleteItems
@@ -199,8 +199,8 @@ struct ElementsView: View {
     let items = items.filter { $0.category?.title == category.title }
     withAnimation {
       offsets.map { items[$0] }.forEach(viewContext.delete)
-      saveContext()
     }
+    saveContext()
   }
   
   // MARK: - Clear Results
@@ -209,13 +209,9 @@ struct ElementsView: View {
     let items = items.filter { $0.category?.title == category.title }
     items.forEach { item in
       item.answer = false
-      item.answerTime = ""
       item.shown = false
-      item.rightCount = 0
-      item.wrongCount = 0
     }
     saveContext()
-    makeHeaderViewData()
   }
   
   // MARK: - Save record
@@ -234,6 +230,7 @@ struct ElementsView: View {
       let nsError = error as NSError
       fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
     }
+    makeHeaderViewData()
   }
   
   // MARK: - Make header viewData
@@ -243,6 +240,7 @@ struct ElementsView: View {
     itemsCount = items.count
     rightCount = items.filter { $0.shown && $0.answer }.count
     wrongCount = items.filter { $0.shown && !$0.answer }.count
+    onElementChanged()
   }
 }
 
@@ -257,6 +255,6 @@ struct ElementsView: View {
   newItem.russian = "Кот"
   
   category.items = [newItem]
-  return ElementsView(category: category)
+  return ElementsView(category: category, onElementChanged: {})
     .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

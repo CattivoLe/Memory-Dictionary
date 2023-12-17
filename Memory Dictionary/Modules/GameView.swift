@@ -174,7 +174,9 @@ struct GameView: View {
     isVerified = true
     onAnswerTap(currentElement, answer, timeElapsed)
     if settingsStorage.isNextAfterAnswer {
-      nextButtonTap(answer: answer)
+      DispatchQueue.main.asyncAfter(deadline: .now() + (answer ? 1 : 3)) {
+        nextButtonTap(answer: answer)
+      }
     }
   }
   
